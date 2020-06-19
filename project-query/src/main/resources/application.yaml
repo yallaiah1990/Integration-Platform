@@ -1,0 +1,147 @@
+spring:
+  application:
+    name: project-query
+  cloud:
+    services:
+      registrationMethod: route
+  sleuth:
+    integration:
+      enabled: true
+    sampler:
+      percentage: 0.1
+  data:
+    mongodb:
+      uri: ${vcap.services.mongo-project-query.credentials.uri:mongodb://mongodb:27017/project-query}
+
+security:
+  user:
+    name: ${spring.application.name}
+    password: ${vcap.services.rabbit.credentials.password:admin}
+  basic:
+    enabled: false
+
+management:
+  security:
+    role: SUPERUSER
+  info:
+    git:
+      mode: full
+
+endpoints:
+  sensitive: true
+
+axon:
+  event-handlers-base-package: com.ultimatesoftware.domain
+  events-base-package: com.ultimatesoftware.domain
+  cluster-name: ${spring.application.name}
+  cluster-exclusive: false
+  eventstore:
+    mongo:
+      connections:
+        default:
+          uri: ${vcap.services.mongo-project-query.credentials.uri:mongodb://mongodb:27017/project-query}
+  terminal:
+    rabbitmq:
+      exchange-name: eventbus
+      transactional: true
+      fatal-on-missing-queue: false
+      concurrent-consumers: ${CONCURRENT_CONSUMERS:10}
+      prefetch-count: ${PREFETCH_COUNT:30}
+
+logging:
+  level:
+    root: ${ROOT_LOG_LEVEL:ERROR}
+    com.ultimatesoftware: ${ULTI_LOG_LEVEL:INFO}
+    org.axonframework: ${AXON_LOG_LEVEL:ERROR}
+    com.ultimatesoftware.axon.serialization: ${AXON_LOG_LEVEL:ERROR}
+
+aop:
+  header-blacklist: authorization,x-security-info
+
+---
+
+spring:
+  profiles: small-test
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: false
+
+axon:
+  test-mode: true
+
+---
+
+spring:
+  profiles: docker
+  data:
+    mongodb:
+      setParameter:
+        diagnosticDataCollectionEnabled: false
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    registry-fetch-interval-seconds: 5
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka:8080/eureka/v2/
+  instance:
+    hostname: ${spring.application.name}
+    lease-renewal-interval-in-seconds: 5
+
+ribbon:
+  IsSecure: false
+
+---
+
+spring:
+  profiles: medium-test
+  rabbitmq:
+    host: ${AMQP_HOST:localhost}
+    port: ${AMQP_PORT:5672}
+    username: guest
+    password: guest
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: false
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${spring.application.name}
+axon:
+  eventstore:
+    mongo:
+      connections:
+        default:
+          uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${spring.application.name}
+
+logging:
+  level:
+    com.ultimatesoftware: ${ULTI_LOG_LEVEL:ERROR}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8080}/eureka/v2/
+
+---
+
+spring:
+  profiles: contract-test
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: false
+
+axon:
+  test-mode: true
+
+---

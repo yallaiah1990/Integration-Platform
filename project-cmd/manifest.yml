@@ -1,0 +1,17 @@
+applications:
+- name: project-cmd
+  memory: 1024M
+  path: target/project-cmd.jar
+  random-route: true
+  services:
+    - mongo-project-cmd
+    - rabbit
+    - integrations-service-registry
+  timeout: 120
+  env:
+    JAVA_OPTS: -Djava.security.egd=file:/dev/./urandom
+    JBP_CONFIG_OPEN_JDK_JRE: >
+      {
+        memory_calculator: { headroom: 5 }
+      }
+  buildpack: java_buildpack_offline

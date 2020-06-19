@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.ultimatesoftware</groupId>
+    <artifactId>launch-spring-boot-starter-parent</artifactId>
+    <version>[1.0.0,2.0.0)</version>
+    <relativePath/> <!-- Lookup parent from repository. -->
+  </parent>
+
+  <artifactId>project-cmd</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>project-cmd</name>
+  <description>project Service</description>
+
+  <repositories>
+    <repository>
+      <id>artifactory.mia.ulti.orion</id>
+      <name>artifactory.mia.ulti.io-releases</name>
+      <url>https://artifactory.mia.ulti.io/artifactory/orion-team-maven-dev</url>
+    </repository>
+    
+  </repositories>
+
+  <properties>
+    <pactbroker.url>https://integrations-pact-broker.apps.mia.ulti.io</pactbroker.url>
+  </properties>
+
+  <dependencies>
+    <!-- Add dependencies here. -->
+    <dependency>
+      <groupId>com.ultimatesoftware</groupId>
+      <artifactId>launch-data-type-utils</artifactId>
+    </dependency>
+  </dependencies>
+</project>
